@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "KUKA KR 6 R900 sixx — Complete Kinematics Suite"
+message: "If you use this software in academic or industrial work, please cite as below."
+type: software
+authors:
+  - family-names: Janga
+    given-names: Bliss
+    affiliation: Fort Lewis College
+abstract: >-
+  A from-scratch implementation of forward and inverse kinematics, the
+  geometric Jacobian, singularity diagnostics, and joint- and task-space
+  trajectory planning for the KUKA KR 6 R900 sixx six-degree-of-freedom
+  industrial manipulator. Includes a programmatically generated URDF whose
+  link frames coincide with the analytic DH frames, and a verification
+  test-suite that checks the implementation against the manufacturer's
+  data sheet, finite-difference derivatives, and the ``urchin`` URDF
+  forward-kinematics engine.
+keywords:
+  - robotics
+  - kinematics
+  - inverse-kinematics
+  - jacobian
+  - trajectory-planning
+  - kuka
+  - manipulator
+  - denavit-hartenberg
+license: MIT
+version: "1.0.0"
+date-released: "2025-04-29"

@@ -1,0 +1,171 @@
+"""
+Problem 8 — URDF generation, validation and side-by-side visualisation
+======================================================================
+
+Programmatically emit the KR 6 URDF (so the link frames coincide with
+the DH frames), reload it via :mod:`urchin`, validate that
+``urchin``'s forward kinematics agrees with the analytic FK in
+:mod:`kr6_kinematics.dh`, and produce a side-by-side static figure
+plus an animation of stick-figure-vs-cylinders motion along the
+Problem 7 trajectory.
+
+Outputs
+-------
+- ``urdf/kr6_sdh.urdf``                       (regenerated)
+- ``figures/problem8_side_by_side.png``
+- ``animations/problem8_urdf_vs_stick.gif``    (requires Problem 7 first)
+"""
+
+from __future__ import annotations
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.animation import FuncAnimation
+from urchin import URDF
+
+from kr6_kinematics import (
+    Q_READY,
+    draw_stick_figure,
+    kr6_fk,
+    setup_3d_axes,
+)
+from kr6_kinematics.urdf_builder import write_urdf
+from _paths import ANIM_DIR, FIG_DIR, URDF_DIR
+
+
+URDF_PATH = URDF_DIR / "kr6_sdh.urdf"
+
+
+# ---------------------------------------------------------------------------
+# Validation
+# ---------------------------------------------------------------------------
+
+def validate_urdf_against_dh(urdf: URDF) -> None:
+    cfg = {f"joint_{i + 1}": Q_READY[i] for i in range(6)}
+    fk_urdf = urdf.link_fk(cfg=cfg)
+    T_urdf = list(fk_urdf.values())[-1]
+    T_sdh = kr6_fk(Q_READY).A
+    pos_err = float(np.linalg.norm(T_urdf[:3, 3] - T_sdh[:3, 3]))
+    rot_err = float(np.linalg.norm(T_urdf[:3, :3] - T_sdh[:3, :3]))
+
+    print(f"\nURDF vs analytic DH at q_ready:")
+    print(f"  position error = {pos_err * 1000:.4f} mm")
+    print(f"  rotation error = {rot_err:.2e}")
+
+
+# ---------------------------------------------------------------------------
+# Cylinder rendering for the URDF
+# ---------------------------------------------------------------------------
+
+def draw_urdf_arm(ax, urdf: URDF, q: np.ndarray, alpha: float = 0.9) -> None:
+    """Draw the URDF robot as cylinders, honouring per-link material colour."""
+    cfg = {f"joint_{i + 1}": q[i] for i in range(6)}
+    fk = urdf.link_fk(cfg=cfg)
+
+    for link, T_world in fk.items():
+        for vis in link.visuals:
+            T_local = vis.origin if vis.origin is not None else np.eye(4)
+            T = T_world @ T_local
+
+            colour = "tab:purple"
+            if vis.material is not None and vis.material.color is not None:
+                colour = vis.material.color[:3]
+
+            geom = vis.geometry
+            if geom.cylinder is not None:
+                L = geom.cylinder.length
+                r = geom.cylinder.radius
+                tv = np.linspace(-L / 2, L / 2, 10)
+                cv = np.linspace(0, 2 * np.pi, 16)
+                tt, cc = np.meshgrid(tv, cv)
+                xs = r * np.cos(cc)
+                ys = r * np.sin(cc)
+                zs = tt
+                P = np.stack([xs, ys, zs, np.ones_like(xs)], axis=-1)
+                Pw = np.einsum("ij,...j->...i", T, P)
+                ax.plot_surface(
+                    Pw[..., 0], Pw[..., 1], Pw[..., 2],
+                    color=colour, alpha=alpha,
+                    linewidth=0, shade=True, antialiased=False,
+                )
+
+
+# ---------------------------------------------------------------------------
+# Static and animated comparisons
+# ---------------------------------------------------------------------------
+
+def static_side_by_side(urdf: URDF) -> None:
+    fig = plt.figure(figsize=(13, 6))
+
+    ax1 = fig.add_subplot(1, 2, 1, projection="3d")
+    setup_3d_axes(ax1, lim=1.1, title="Stick figure  (DH)")
+    draw_stick_figure(ax1, Q_READY, show_frames=False)
+
+    ax2 = fig.add_subplot(1, 2, 2, projection="3d")
+    setup_3d_axes(ax2, lim=1.1, title="URDF cylinders")
+    draw_urdf_arm(ax2, urdf, Q_READY)
+
+    plt.tight_layout(pad=1.5)
+    out = FIG_DIR / "problem8_side_by_side.png"
+    plt.savefig(out, dpi=140, bbox_inches="tight")
+    plt.close()
+    print(f"saved {out}")
+
+
+def animate_side_by_side(urdf: URDF, Q: np.ndarray, filename, fps: int = 12) -> None:
+    N = Q.shape[0]
+    fig = plt.figure(figsize=(13, 6))
+    ax1 = fig.add_subplot(1, 2, 1, projection="3d")
+    ax2 = fig.add_subplot(1, 2, 2, projection="3d")
+
+    ee_path = np.array([kr6_fk(Q[i]).t for i in range(N)])
+
+    def update(k):
+        ax1.cla()
+        ax2.cla()
+        setup_3d_axes(ax1, lim=1.1, title=f"stick figure  {k + 1}/{N}")
+        draw_stick_figure(ax1, Q[k], show_frames=False)
+        ax1.plot(
+            ee_path[: k + 1, 0], ee_path[: k + 1, 1], ee_path[: k + 1, 2],
+            color="tab:orange", linewidth=1.2,
+        )
+        setup_3d_axes(ax2, lim=1.1, title="URDF")
+        draw_urdf_arm(ax2, urdf, Q[k])
+        return []
+
+    anim = FuncAnimation(fig, update, frames=N, interval=1000 / fps, blit=False)
+    anim.save(filename, writer="pillow", fps=fps)
+    plt.close(fig)
+    print(f"saved {filename}")
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+def main() -> None:
+    print("=" * 68)
+    print("  Problem 8 — URDF + side-by-side visualisation")
+    print("=" * 68)
+
+    write_urdf(URDF_PATH)
+    print(f"wrote {URDF_PATH}")
+
+    urdf = URDF.load(str(URDF_PATH))
+    validate_urdf_against_dh(urdf)
+    static_side_by_side(urdf)
+
+    Q_path = FIG_DIR / "problem7_Q.npy"
+    if Q_path.exists():
+        Q = np.load(Q_path)
+        step = max(1, Q.shape[0] // 40)
+        Q_small = Q[::step]
+        gif = ANIM_DIR / "problem8_urdf_vs_stick.gif"
+        animate_side_by_side(urdf, Q_small, str(gif), fps=12)
+    else:
+        print("(run scripts/07_task_space_trajectory.py first to enable the side-by-side animation)")
+    print("done.")
+
+
+if __name__ == "__main__":
+    main()

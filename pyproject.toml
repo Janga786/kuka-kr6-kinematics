@@ -1,0 +1,110 @@
+[build-system]
+requires      = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name        = "kr6-kinematics"
+version     = "1.0.0"
+description = "From-scratch forward and inverse kinematics, Jacobian analysis, and trajectory planning for the KUKA KR 6 R900 sixx."
+readme      = "README.md"
+requires-python = ">=3.9"
+license     = { text = "MIT" }
+authors     = [
+    { name = "Bliss Janga" },
+]
+keywords    = [
+    "robotics",
+    "kinematics",
+    "inverse-kinematics",
+    "forward-kinematics",
+    "jacobian",
+    "trajectory-planning",
+    "kuka",
+    "industrial-robot",
+    "manipulator",
+    "denavit-hartenberg",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Typing :: Typed",
+]
+dependencies = [
+    "numpy>=1.23",
+    "matplotlib>=3.6",
+    "spatialmath-python>=1.1",
+    "urchin>=0.0.27",
+    "pillow>=9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4",
+    "mypy>=1.5",
+]
+
+[project.urls]
+Homepage      = "https://github.com/Janga786/kuka-kr6-kinematics"
+Repository    = "https://github.com/Janga786/kuka-kr6-kinematics"
+"Bug Tracker" = "https://github.com/Janga786/kuka-kr6-kinematics/issues"
+
+[tool.setuptools]
+packages = ["kr6_kinematics"]
+
+[tool.setuptools.package-data]
+kr6_kinematics = ["py.typed"]
+
+# ---------------------------------------------------------------------------
+# Tooling
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths      = ["tests"]
+addopts        = "-ra --strict-markers --strict-config"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # Pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "C90",  # mccabe complexity
+]
+ignore = [
+    "E741",  # ambiguous variable names (a, alpha, d are DH conventions)
+    "N803",  # argument names (allow Q, T, R, J for math objects)
+    "N806",  # variable names (allow Q, T, R, J for math objects)
+]
+
+[tool.mypy]
+python_version            = "3.9"
+ignore_missing_imports    = true
+disallow_incomplete_defs  = false
+disallow_untyped_defs     = false
+warn_redundant_casts      = true
+warn_unused_ignores       = true
