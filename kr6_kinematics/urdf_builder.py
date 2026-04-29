@@ -28,13 +28,11 @@ with the DH frames.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Tuple
 
 import numpy as np
 from numpy.typing import NDArray
 
-from .dh import KR6_SDH, Q_MIN, Q_MAX
-
+from .dh import KR6_SDH, Q_MAX, Q_MIN
 
 # ---------------------------------------------------------------------------
 # Elementary transforms used to build pre/post factors
@@ -68,7 +66,7 @@ def _Tx(a: float) -> NDArray[np.float64]:
     return M
 
 
-def rpy_from_R(R: NDArray[np.float64]) -> Tuple[float, float, float]:
+def rpy_from_R(R: NDArray[np.float64]) -> tuple[float, float, float]:
     """Extract URDF-convention roll-pitch-yaw from a rotation matrix."""
     sy = np.sqrt(R[0, 0] ** 2 + R[1, 0] ** 2)
     if sy > 1e-6:

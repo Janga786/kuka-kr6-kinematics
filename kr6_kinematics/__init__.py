@@ -49,28 +49,28 @@ Public API
 """
 
 from .dh import (
-    KR6_SDH,
-    Q_MIN,
-    Q_MAX,
-    QD_MAX,
-    Q_ZERO,
-    Q_READY,
     JOINT_NAMES,
+    KR6_SDH,
+    Q_MAX,
+    Q_MIN,
+    Q_READY,
+    Q_ZERO,
+    QD_MAX,
+    clip_to_limits,
     dh_link,
     dh_link_SE3,
-    kr6_frames,
-    kr6_fk,
-    clip_to_limits,
     in_limits,
+    kr6_fk,
+    kr6_frames,
 )
-from .jacobian import jacobian, manipulability, is_singular
 from .ik import ik_position, ik_velocity
-from .trajectories import quintic, quintic_vec, lspb
+from .jacobian import is_singular, jacobian, manipulability
+from .trajectories import lspb, quintic, quintic_vec
 from .viz import (
-    setup_3d_axes,
+    animate_joint_trajectory,
     draw_frame,
     draw_stick_figure,
-    animate_joint_trajectory,
+    setup_3d_axes,
 )
 
 __all__ = [

@@ -97,9 +97,13 @@ select = [
 ]
 ignore = [
     "E741",  # ambiguous variable names (a, alpha, d are DH conventions)
+    "N802",  # function names (Rz, Rx, dh_link_SE3 mirror SO(3)/SE(3) symbols)
     "N803",  # argument names (allow Q, T, R, J for math objects)
     "N806",  # variable names (allow Q, T, R, J for math objects)
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/0*_*.py" = ["N999"]   # numbered driver scripts intentionally start with a digit
 
 [tool.mypy]
 python_version            = "3.9"

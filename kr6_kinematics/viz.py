@@ -14,14 +14,13 @@ reproduce on a stock scientific Python install.
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional
+from typing import Callable
 
 import numpy as np
 from matplotlib.animation import FuncAnimation
 from spatialmath import SE3
 
 from .dh import kr6_frames
-
 
 # ---------------------------------------------------------------------------
 # Axis decoration
@@ -47,7 +46,7 @@ def draw_frame(
     length: float = 0.08,
     alpha: float = 1.0,
     linewidth: float = 1.5,
-) -> List:
+) -> list:
     """Draw the three RGB axes of a homogeneous frame ``T`` on ``ax``."""
     if isinstance(T, SE3):
         origin = T.t
@@ -85,7 +84,7 @@ def draw_stick_figure(
     link_color: str = "k",
     joint_color: str = "tab:blue",
     lw: float = 2,
-) -> List:
+) -> list:
     """
     Draw the manipulator as a polyline through DH frame origins.
 
@@ -136,12 +135,12 @@ def draw_stick_figure(
 def animate_joint_trajectory(
     Q,
     title: str = "",
-    filename: Optional[str] = None,
+    filename: str | None = None,
     fps: int = 20,
     show_frames: bool = False,
     ee_trail: bool = True,
     lim: float = 1.0,
-    extra_draw: Optional[Callable] = None,
+    extra_draw: Callable | None = None,
 ) -> FuncAnimation:
     """
     Animate the manipulator along a sequence of joint configurations.

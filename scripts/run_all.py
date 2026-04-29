@@ -15,11 +15,9 @@ from __future__ import annotations
 import runpy
 import time
 from pathlib import Path
-from typing import List
-
 
 HERE = Path(__file__).resolve().parent
-PROBLEMS: List[str] = [
+PROBLEMS: list[str] = [
     "01_robot_id.py",
     "02_dh_frames.py",
     "03_forward_kinematics.py",

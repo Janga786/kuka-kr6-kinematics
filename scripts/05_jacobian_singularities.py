@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import numpy as np
+from _paths import ANIM_DIR, FIG_DIR
 
 from kr6_kinematics import (
     Q_READY,
@@ -32,8 +33,6 @@ from kr6_kinematics import (
     kr6_fk,
     quintic_vec,
 )
-from _paths import ANIM_DIR, FIG_DIR
-
 
 # ---------------------------------------------------------------------------
 # Analytic vs. finite-difference Jacobian verification

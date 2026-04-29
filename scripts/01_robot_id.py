@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from kr6_kinematics import KR6_SDH, Q_MIN, Q_MAX, QD_MAX, Q_ZERO, kr6_frames
+from kr6_kinematics import KR6_SDH, Q_MAX, Q_MIN, Q_ZERO, QD_MAX, kr6_frames
 
 
 def main() -> None:

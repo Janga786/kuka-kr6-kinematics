@@ -17,10 +17,9 @@ Run with::
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
-import numpy as np
-
-from kr6_kinematics import KR6_SDH, Q_ZERO, kr6_frames, setup_3d_axes, draw_stick_figure
 from _paths import FIG_DIR
+
+from kr6_kinematics import KR6_SDH, Q_ZERO, draw_stick_figure, kr6_frames, setup_3d_axes
 
 
 def print_dh_table() -> None:

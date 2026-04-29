@@ -20,11 +20,8 @@ velocity and acceleration.
 
 from __future__ import annotations
 
-from typing import Tuple
-
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
-
 
 # ---------------------------------------------------------------------------
 # Quintic (5th-order) polynomial trajectory
@@ -40,7 +37,7 @@ def quintic(
     qdd0: float = 0.0,
     qddf: float = 0.0,
     num_points: int = 200,
-) -> Tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
+) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
     """
     Generate a quintic polynomial scalar trajectory.
 
@@ -58,7 +55,8 @@ def quintic(
         \\end{bmatrix}
         \\begin{bmatrix}a_0\\\\a_1\\\\a_2\\\\a_3\\\\a_4\\\\a_5\\end{bmatrix}
         =
-        \\begin{bmatrix}q_0\\\\\\dot q_0\\\\\\ddot q_0\\\\q_f\\\\\\dot q_f\\\\\\ddot q_f\\end{bmatrix}
+        \\begin{bmatrix}q_0\\\\\\dot q_0\\\\\\ddot q_0\\\\q_f\\\\\\dot q_f\\\\\\ddot q_f
+        \\end{bmatrix}
 
     for the polynomial coefficients :math:`a_k`, then evaluates
     :math:`q,\\dot q,\\ddot q` on a uniform time grid.
@@ -92,7 +90,7 @@ def quintic_vec(
     q0: ArrayLike,
     qf: ArrayLike,
     num_points: int = 200,
-) -> Tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
+) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
     """
     Component-wise quintic interpolation between two vector waypoints.
 
@@ -132,7 +130,7 @@ def lspb(
     qf: float,
     v: float,
     num_points: int = 200,
-) -> Tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
+) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
     """
     Generate an LSPB (trapezoidal-velocity) trajectory.
 

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import numpy as np
+from _paths import ANIM_DIR, FIG_DIR, URDF_DIR
 from matplotlib.animation import FuncAnimation
 from urchin import URDF
 
@@ -30,8 +31,6 @@ from kr6_kinematics import (
     setup_3d_axes,
 )
 from kr6_kinematics.urdf_builder import write_urdf
-from _paths import ANIM_DIR, FIG_DIR, URDF_DIR
-
 
 URDF_PATH = URDF_DIR / "kr6_sdh.urdf"
 
@@ -48,7 +47,7 @@ def validate_urdf_against_dh(urdf: URDF) -> None:
     pos_err = float(np.linalg.norm(T_urdf[:3, 3] - T_sdh[:3, 3]))
     rot_err = float(np.linalg.norm(T_urdf[:3, :3] - T_sdh[:3, :3]))
 
-    print(f"\nURDF vs analytic DH at q_ready:")
+    print("\nURDF vs analytic DH at q_ready:")
     print(f"  position error = {pos_err * 1000:.4f} mm")
     print(f"  rotation error = {rot_err:.2e}")
 
@@ -163,7 +162,10 @@ def main() -> None:
         gif = ANIM_DIR / "problem8_urdf_vs_stick.gif"
         animate_side_by_side(urdf, Q_small, str(gif), fps=12)
     else:
-        print("(run scripts/07_task_space_trajectory.py first to enable the side-by-side animation)")
+        print(
+            "(run scripts/07_task_space_trajectory.py first "
+            "to enable the side-by-side animation)"
+        )
     print("done.")
 
 

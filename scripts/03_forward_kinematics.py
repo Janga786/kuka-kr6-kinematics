@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import numpy as np
+from _paths import FIG_DIR
 
 from kr6_kinematics import (
     KR6_SDH,
@@ -29,7 +30,6 @@ from kr6_kinematics import (
     kr6_fk,
     setup_3d_axes,
 )
-from _paths import FIG_DIR
 
 
 def print_link_transforms(q, label: str) -> None:

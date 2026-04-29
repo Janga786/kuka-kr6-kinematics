@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import numpy as np
+from _paths import ANIM_DIR, FIG_DIR
 
 from kr6_kinematics import (
     Q_READY,
@@ -27,8 +28,6 @@ from kr6_kinematics import (
     quintic_vec,
     setup_3d_axes,
 )
-from _paths import ANIM_DIR, FIG_DIR
-
 
 # Per-joint sweep amplitude (radians) for the joint-isolation panel.
 DQ = np.array([0.8, 0.6, 0.8, 0.6, 0.8, 0.6])

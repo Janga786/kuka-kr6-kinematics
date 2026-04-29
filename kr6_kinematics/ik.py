@@ -31,7 +31,6 @@ from numpy.typing import ArrayLike, NDArray
 from .dh import KR6_SDH, dh_link
 from .jacobian import jacobian
 
-
 # ---------------------------------------------------------------------------
 # Geometry constants (extracted once from the DH table for clarity)
 # ---------------------------------------------------------------------------

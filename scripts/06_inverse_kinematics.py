@@ -21,10 +21,9 @@ Outputs
 
 from __future__ import annotations
 
-from typing import Tuple
-
 import matplotlib.pyplot as plt
 import numpy as np
+from _paths import FIG_DIR
 
 from kr6_kinematics import (
     Q_MAX,
@@ -36,14 +35,16 @@ from kr6_kinematics import (
     kr6_fk,
     setup_3d_axes,
 )
-from _paths import FIG_DIR
-
 
 # ---------------------------------------------------------------------------
 # Round-trip helpers
 # ---------------------------------------------------------------------------
 
-def round_trip(q_true, elbow_up: bool = True, shoulder_front: bool = True) -> Tuple[np.ndarray, float, float]:
+def round_trip(
+    q_true,
+    elbow_up: bool = True,
+    shoulder_front: bool = True,
+) -> tuple[np.ndarray, float, float]:
     """FK → IK → FK on ``q_true``.  Returns ``(q_sol, pos_err_m, rot_err)``."""
     T = kr6_fk(q_true)
     q_sol = ik_position(T, elbow_up=elbow_up, shoulder_front=shoulder_front)
@@ -68,7 +69,7 @@ def solve_and_plot() -> None:
     print(f"target flange position : {np.round(T_target.t, 4)}")
 
     q_sol, pos_err, rot_err = round_trip(q_true, elbow_up=True, shoulder_front=True)
-    print(f"\nIK solution (elbow up, shoulder front):")
+    print("\nIK solution (elbow up, shoulder front):")
     print(f"  q_true       = {np.round(q_true, 4)}")
     print(f"  q_sol        = {np.round(q_sol, 4)}")
     print(f"  position err = {pos_err * 1000:.4f} mm")

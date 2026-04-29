@@ -26,10 +26,9 @@ Outputs
 
 from __future__ import annotations
 
-from typing import List, Tuple
-
 import matplotlib.pyplot as plt
 import numpy as np
+from _paths import ANIM_DIR, FIG_DIR
 from spatialmath import SE3
 
 from kr6_kinematics import (
@@ -42,8 +41,6 @@ from kr6_kinematics import (
     quintic,
     setup_3d_axes,
 )
-from _paths import ANIM_DIR, FIG_DIR
-
 
 N_POINTS = 80
 DURATION = 2.0
@@ -53,7 +50,7 @@ DURATION = 2.0
 # Path generation and IK tracking
 # ---------------------------------------------------------------------------
 
-def task_trajectory() -> Tuple[np.ndarray, List[SE3], np.ndarray, np.ndarray, np.ndarray]:
+def task_trajectory() -> tuple[np.ndarray, list[SE3], np.ndarray, np.ndarray, np.ndarray]:
     """Generate a straight-line Cartesian trajectory with quintic time scaling."""
     T_ready = kr6_fk(Q_READY)
     R_fixed = T_ready.R
@@ -71,7 +68,7 @@ def task_trajectory() -> Tuple[np.ndarray, List[SE3], np.ndarray, np.ndarray, np
     return t, poses, V, p_start, p_end
 
 
-def ik_track(poses: List[SE3], V: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def ik_track(poses: list[SE3], V: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Run position IK and velocity IK at every sample of the path."""
     N = len(poses)
     Q = np.zeros((N, 6))

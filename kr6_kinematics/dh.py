@@ -28,12 +28,9 @@ industrial robot", 2022). All units are SI (metres and radians).
 
 from __future__ import annotations
 
-from typing import List, Sequence
-
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 from spatialmath import SE3
-
 
 # ---------------------------------------------------------------------------
 # DH parameter table
@@ -84,7 +81,7 @@ Q_READY: NDArray[np.float64] = np.array(
 )
 
 #: Canonical KUKA joint names (A1 … A6).
-JOINT_NAMES: List[str] = [f"A{i + 1}" for i in range(6)]
+JOINT_NAMES: list[str] = [f"A{i + 1}" for i in range(6)]
 
 
 # ---------------------------------------------------------------------------
@@ -137,7 +134,7 @@ def dh_link_SE3(a: float, alpha: float, d: float, theta: float) -> SE3:
 # Forward kinematics
 # ---------------------------------------------------------------------------
 
-def kr6_frames(q: ArrayLike) -> List[SE3]:
+def kr6_frames(q: ArrayLike) -> list[SE3]:
     """
     Compute every DH frame along the kinematic chain.
 
@@ -158,7 +155,7 @@ def kr6_frames(q: ArrayLike) -> List[SE3]:
         raise ValueError(f"expected length-6 joint vector, got shape {q.shape}")
 
     T = SE3()
-    frames: List[SE3] = [T]
+    frames: list[SE3] = [T]
     for i in range(6):
         a, alpha, d, theta_off = KR6_SDH[i]
         T = T * dh_link_SE3(a, alpha, d, theta_off + q[i])
