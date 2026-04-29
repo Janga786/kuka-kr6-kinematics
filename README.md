@@ -8,7 +8,7 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Tests](https://img.shields.io/badge/tests-39%20passing-brightgreen.svg)](#-verification--numerical-results)
+[![Tests](https://img.shields.io/badge/tests-39%20passing-brightgreen.svg)](#verification--numerical-results)
 [![DOI ready](https://img.shields.io/badge/citation-CITATION.cff-orange.svg)](CITATION.cff)
 
 <br/>
