@@ -1,6 +1,6 @@
 """
-Problem 1 — Robot identification
-================================
+Robot specification dump
+========================
 
 Print the manufacturer-published specifications of the KUKA KR 6 R900
 sixx, the joint-limit and joint-velocity vectors used throughout the
@@ -9,7 +9,7 @@ DH table against KUKA's published 0.901 m wrist-centre reach.
 
 Run with::
 
-    python scripts/01_robot_id.py
+    python scripts/robot_spec.py
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from kr6_kinematics import KR6_SDH, Q_MAX, Q_MIN, Q_ZERO, QD_MAX, kr6_frames
 
 def main() -> None:
     print("=" * 68)
-    print("  KUKA KR 6 R900 sixx  ·  Robot identification (Problem 1)")
+    print("  KUKA KR 6 R900 sixx  ·  Robot specification")
     print("=" * 68)
 
     spec = [

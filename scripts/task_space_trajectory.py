@@ -1,6 +1,6 @@
 """
-Problem 7 — Task-space trajectory with position + velocity IK
-=============================================================
+Task-space trajectory with position + velocity IK
+=================================================
 
 Generate a straight-line task-space path (with quintic time scaling on
 each Cartesian component) starting near the ready pose, then for every
@@ -16,12 +16,12 @@ and an animated GIF visualises the resulting motion.
 
 Outputs
 -------
-- ``figures/problem7_joint_trajectories.png``
-- ``figures/problem7_joint_velocities.png``
-- ``figures/problem7_ee_path.png``
-- ``figures/problem7_Q.npy`` ``problem7_Qd.npy``  (numerical artefacts
-  consumed by Problem 8)
-- ``animations/problem7_animation.gif``
+- ``figures/task_space_joint_trajectories.png``
+- ``figures/task_space_joint_velocities.png``
+- ``figures/task_space_ee_path.png``
+- ``figures/task_space_Q.npy`` ``task_space_Qd.npy``  (numerical artefacts
+  consumed by the URDF demo)
+- ``animations/task_space_motion.gif``
 """
 
 from __future__ import annotations
@@ -86,14 +86,14 @@ def ik_track(poses: list[SE3], V: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 
 def plot_joint_trajectories(t: np.ndarray, Q: np.ndarray) -> None:
     fig, axes = plt.subplots(6, 1, figsize=(8, 10), sharex=True)
-    fig.suptitle("Problem 7: joint positions reconstructed from position IK")
+    fig.suptitle("Joint positions reconstructed from position IK")
     for j in range(6):
         axes[j].plot(t, Q[:, j], "-", linewidth=2)
         axes[j].set_ylabel(f"q{j + 1} [rad]")
         axes[j].grid(alpha=0.3)
     axes[-1].set_xlabel("t [s]")
     plt.tight_layout()
-    out = FIG_DIR / "problem7_joint_trajectories.png"
+    out = FIG_DIR / "task_space_joint_trajectories.png"
     plt.savefig(out, dpi=140)
     plt.close()
     print(f"saved {out}")
@@ -105,7 +105,7 @@ def plot_joint_velocities(t: np.ndarray, Qd: np.ndarray, Q: np.ndarray) -> None:
     Qd_fd = np.gradient(Q, dt, axis=0)
 
     fig, axes = plt.subplots(6, 1, figsize=(8, 10), sharex=True)
-    fig.suptitle(r"Problem 7: joint velocities  $\dot q = J^{-1} v_{\mathrm{task}}$")
+    fig.suptitle(r"Joint velocities  $\dot q = J^{-1} v_{\mathrm{task}}$")
     for j in range(6):
         axes[j].plot(t, Qd[:, j], "-", linewidth=2, label=r"$J^{-1} v$")
         axes[j].plot(t, Qd_fd[:, j], "--", linewidth=1, label="finite difference")
@@ -114,7 +114,7 @@ def plot_joint_velocities(t: np.ndarray, Qd: np.ndarray, Q: np.ndarray) -> None:
     axes[0].legend(loc="upper right", fontsize=9)
     axes[-1].set_xlabel("t [s]")
     plt.tight_layout()
-    out = FIG_DIR / "problem7_joint_velocities.png"
+    out = FIG_DIR / "task_space_joint_velocities.png"
     plt.savefig(out, dpi=140)
     plt.close()
     print(f"saved {out}")
@@ -129,7 +129,7 @@ def plot_ee_path(Q: np.ndarray, p_start: np.ndarray, p_end: np.ndarray) -> None:
 
     fig = plt.figure(figsize=(9, 7))
     ax = fig.add_subplot(111, projection="3d")
-    setup_3d_axes(ax, lim=1.1, title="Problem 7 — end-effector path")
+    setup_3d_axes(ax, lim=1.1, title="End-effector path")
     draw_stick_figure(ax, Q[0], show_frames=False)
     draw_stick_figure(
         ax, Q[-1], show_frames=False,
@@ -140,7 +140,7 @@ def plot_ee_path(Q: np.ndarray, p_start: np.ndarray, p_end: np.ndarray) -> None:
     ax.scatter(*p_end,   color="red",   s=80, label="end")
     ax.legend()
     plt.tight_layout()
-    out = FIG_DIR / "problem7_ee_path.png"
+    out = FIG_DIR / "task_space_ee_path.png"
     plt.savefig(out, dpi=140)
     plt.close()
     print(f"saved {out}")
@@ -148,25 +148,25 @@ def plot_ee_path(Q: np.ndarray, p_start: np.ndarray, p_end: np.ndarray) -> None:
 
 def main() -> None:
     print("=" * 68)
-    print("  Problem 7 — Task-space trajectory + IK tracking")
+    print("  Task-space trajectory + IK tracking")
     print("=" * 68)
     t, poses, V, p_start, p_end = task_trajectory()
     print(f"  {len(poses)} samples,  {np.round(p_start, 3)} → {np.round(p_end, 3)}")
     print(f"  peak |v_task| = {np.linalg.norm(V[:, :3], axis=1).max():.3f} m/s")
 
     Q, Qd = ik_track(poses, V)
-    np.save(FIG_DIR / "problem7_Q.npy", Q)
-    np.save(FIG_DIR / "problem7_Qd.npy", Qd)
+    np.save(FIG_DIR / "task_space_Q.npy", Q)
+    np.save(FIG_DIR / "task_space_Qd.npy", Qd)
     print(f"  peak |q̇|     = {np.linalg.norm(Qd, axis=1).max():.3f} rad/s")
 
     plot_joint_trajectories(t, Q)
     plot_joint_velocities(t, Qd, Q)
     plot_ee_path(Q, p_start, p_end)
 
-    gif = ANIM_DIR / "problem7_animation.gif"
+    gif = ANIM_DIR / "task_space_motion.gif"
     animate_joint_trajectory(
         Q,
-        title="Problem 7: task-space quintic trajectory",
+        title="Task-space quintic trajectory",
         filename=str(gif),
         fps=20,
         lim=1.1,

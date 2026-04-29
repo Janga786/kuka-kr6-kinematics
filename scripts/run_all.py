@@ -1,6 +1,6 @@
 """
-Run every problem driver in order, regenerating the full set of
-figures and animations under :file:`figures/` and :file:`animations/`.
+Run every demo driver in order, regenerating the full set of figures
+and animations under :file:`figures/` and :file:`animations/`.
 
 Usage::
 
@@ -17,21 +17,21 @@ import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PROBLEMS: list[str] = [
-    "01_robot_id.py",
-    "02_dh_frames.py",
-    "03_forward_kinematics.py",
-    "04_joint_trajectories.py",
-    "05_jacobian_singularities.py",
-    "06_inverse_kinematics.py",
-    "07_task_space_trajectory.py",
-    "08_urdf_visualization.py",
+DRIVERS: list[str] = [
+    "robot_spec.py",
+    "dh_frames.py",
+    "forward_kinematics.py",
+    "joint_trajectories.py",
+    "jacobian_singularities.py",
+    "inverse_kinematics.py",
+    "task_space_trajectory.py",
+    "urdf_demo.py",
 ]
 
 
 def main() -> None:
     overall_t0 = time.perf_counter()
-    for filename in PROBLEMS:
+    for filename in DRIVERS:
         print()
         print("#" * 76)
         print(f"# Running scripts/{filename}")
@@ -42,7 +42,7 @@ def main() -> None:
 
     print()
     print("=" * 76)
-    print(f"all problems regenerated in {time.perf_counter() - overall_t0:.1f} s")
+    print(f"all drivers regenerated in {time.perf_counter() - overall_t0:.1f} s")
     print("=" * 76)
 
 

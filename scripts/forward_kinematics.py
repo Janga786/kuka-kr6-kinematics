@@ -1,6 +1,6 @@
 """
-Problem 3 — Forward kinematics
-==============================
+Forward kinematics demo
+=======================
 
 Print every per-link transform :math:`T_{i-1}^{\\,i}` and the composite
 :math:`T_0^6` for two reference configurations, and save a comparison
@@ -8,11 +8,11 @@ figure of the corresponding stick-figure poses.
 
 Output
 ------
-- ``figures/problem3_fk_configs.png``
+- ``figures/forward_kinematics_configs.png``
 
 Run with::
 
-    python scripts/03_forward_kinematics.py
+    python scripts/forward_kinematics.py
 """
 
 from __future__ import annotations
@@ -59,7 +59,7 @@ def plot_fk_configs() -> None:
         setup_3d_axes(ax, lim=1.1, title=title)
         draw_stick_figure(ax, q, show_frames=False)
     plt.tight_layout()
-    out = FIG_DIR / "problem3_fk_configs.png"
+    out = FIG_DIR / "forward_kinematics_configs.png"
     plt.savefig(out, dpi=140, bbox_inches="tight")
     plt.close()
     print(f"\nsaved {out}")
@@ -67,7 +67,7 @@ def plot_fk_configs() -> None:
 
 def main() -> None:
     print("=" * 68)
-    print("  Problem 3 — Forward kinematics")
+    print("  Forward kinematics demo")
     print("=" * 68)
 
     print_link_transforms(Q_ZERO, "q_zero")

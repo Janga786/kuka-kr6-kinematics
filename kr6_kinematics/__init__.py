@@ -18,10 +18,8 @@ The package implements, from first principles:
   DH frames for cross-validation against ROS / `urchin` based forward
   kinematics
 
-The implementation accompanies the ENGR 431 (Robotic Manipulation) final
-project at Fort Lewis College and is verified against the manufacturer's
-data sheet (KUKA Roboter GmbH, 2015) and the ROS-Industrial KR 6 R900
-URDF.
+The implementation is verified against the manufacturer's data sheet
+(KUKA Roboter GmbH, 2015) and the ROS-Industrial KR 6 R900 URDF.
 
 Public API
 ----------

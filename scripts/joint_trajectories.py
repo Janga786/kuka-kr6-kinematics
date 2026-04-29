@@ -1,6 +1,6 @@
 """
-Problem 4 — Joint-space quintic trajectories and stick-figure animation
-=======================================================================
+Joint-space quintic trajectories and stick-figure animation
+===========================================================
 
 Demonstrate the quintic primitive on a single joint, render a six-panel
 "shifted pose" figure that visualises the workspace effect of each
@@ -9,9 +9,9 @@ each joint through ``DQ`` radians from the ready pose.
 
 Output
 ------
-- ``figures/problem4_quintic_q1.png``
-- ``figures/problem4_joints_panel.png``
-- ``animations/problem4_motion.gif``
+- ``figures/quintic_profile.png``
+- ``figures/joint_isolation_panel.png``
+- ``animations/joint_sweep.gif``
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ def quintic_profile_figure() -> None:
     for a in axes:
         a.grid(alpha=0.3)
     plt.tight_layout()
-    out = FIG_DIR / "problem4_quintic_q1.png"
+    out = FIG_DIR / "quintic_profile.png"
     plt.savefig(out, dpi=140)
     plt.close()
     print(f"saved {out}")
@@ -78,7 +78,7 @@ def joints_panel_figure() -> None:
         )
 
     plt.tight_layout()
-    out = FIG_DIR / "problem4_joints_panel.png"
+    out = FIG_DIR / "joint_isolation_panel.png"
     plt.savefig(out, dpi=140, bbox_inches="tight")
     plt.close()
     print(f"saved {out}")
@@ -99,7 +99,7 @@ def out_and_back_animation() -> None:
     Q_full = np.concatenate(Q_list, axis=0)
     print(f"  animation frames: {Q_full.shape[0]}")
 
-    gif = ANIM_DIR / "problem4_motion.gif"
+    gif = ANIM_DIR / "joint_sweep.gif"
     animate_joint_trajectory(
         Q_full,
         title="KR 6 — joint-at-a-time quintic sweep",
@@ -112,7 +112,7 @@ def out_and_back_animation() -> None:
 
 def main() -> None:
     print("=" * 68)
-    print("  Problem 4 — Joint-space quintic trajectories")
+    print("  Joint-space quintic trajectories")
     print("=" * 68)
     quintic_profile_figure()
     joints_panel_figure()

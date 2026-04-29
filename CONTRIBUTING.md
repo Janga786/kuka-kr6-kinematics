@@ -21,11 +21,10 @@ make test                             # runs the full pytest suite
 | Path                  | Contents                                                        |
 | --------------------- | --------------------------------------------------------------- |
 | `kr6_kinematics/`     | The library — DH/FK, IK, Jacobian, trajectories, viz, URDF gen. |
-| `scripts/0X_*.py`     | One driver per assignment problem; produce figures/animations.  |
+| `scripts/*.py`        | Topical driver scripts; produce figures and animations.         |
 | `tests/`              | `pytest` suite that verifies analytic results numerically.      |
 | `figures/`, `animations/` | Reproducible artefacts emitted by the driver scripts.       |
 | `urdf/`               | Auto-generated URDF.                                            |
-| `docs/`               | Academic deliverables (report, presentation, derivations).      |
 
 ## Coding standards
 

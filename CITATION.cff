@@ -5,7 +5,6 @@ type: software
 authors:
   - family-names: Janga
     given-names: Bliss
-    affiliation: Fort Lewis College
 abstract: >-
   A from-scratch implementation of forward and inverse kinematics, the
   geometric Jacobian, singularity diagnostics, and joint- and task-space

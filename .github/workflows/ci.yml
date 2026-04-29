@@ -86,14 +86,14 @@ jobs:
       - name: Configure non-interactive matplotlib backend
         run: echo "MPLBACKEND=Agg" >> $GITHUB_ENV
 
-      - name: Run problem 1 (text-only)
-        run: python scripts/01_robot_id.py
+      - name: Run robot_spec (text-only)
+        run: python scripts/robot_spec.py
 
-      - name: Run problem 2 (DH frames figure)
-        run: python scripts/02_dh_frames.py
+      - name: Run dh_frames (DH frames figure)
+        run: python scripts/dh_frames.py
 
-      - name: Run problem 3 (forward kinematics)
-        run: python scripts/03_forward_kinematics.py
+      - name: Run forward_kinematics
+        run: python scripts/forward_kinematics.py
 
-      - name: Run problem 6 (closed-form IK)
-        run: python scripts/06_inverse_kinematics.py
+      - name: Run inverse_kinematics (closed-form IK)
+        run: python scripts/inverse_kinematics.py

@@ -13,9 +13,9 @@
 
 <br/>
 
-<img src="animations/problem7_animation.gif" alt="KR 6 task-space trajectory tracking" width="48%"/>
+<img src="animations/task_space_motion.gif" alt="KR 6 task-space trajectory tracking" width="48%"/>
 &nbsp;
-<img src="animations/problem8_urdf_vs_stick.gif" alt="DH stick figure vs. URDF cross-validation" width="48%"/>
+<img src="animations/urdf_vs_stick.gif" alt="DH stick figure vs. URDF cross-validation" width="48%"/>
 
 <br/>
 <sub><i>Left:</i> task-space straight-line motion executed via closed-form inverse position kinematics + Jacobian-inverse velocity kinematics.<br/>
@@ -47,20 +47,19 @@
 
 ## Overview
 
-This repository is the complete software companion to a senior-level
-manipulator-kinematics study of the **KUKA KR 6 R900 sixx** — a 6-axis
-industrial robot from KUKA's KR AGILUS family widely used in pick-and-place,
-welding, and small-part assembly. The work was originally produced as the
-final project for ENGR 431 (*Robotic Manipulation*) at Fort Lewis College,
-then refactored into a small, well-tested Python library suitable for
-research, teaching, or as a reference implementation.
+A small, well-tested Python library that implements the full kinematic
+stack of the **KUKA KR 6 R900 sixx** — a 6-axis industrial robot from
+KUKA's KR AGILUS family widely used in pick-and-place, welding, and
+small-part assembly — without leaning on any black-box robotics package
+for the math.
 
-Every result here — the DH parameters, the closed-form IK, the Jacobian, the
-trajectories, even the URDF — is derived in the source from the underlying
-geometry rather than borrowed from an off-the-shelf package such as
-`roboticstoolbox` or `MoveIt!`. Where external libraries are used (e.g.
-`spatialmath` for 4×4 wrappers, `urchin` for URDF reloading), they appear
-strictly as cross-validation oracles, never as the source of truth.
+Every result here — the DH parameters, the closed-form IK, the
+Jacobian, the trajectories, even the URDF — is derived in the source
+from the underlying geometry rather than borrowed from an off-the-shelf
+package such as `roboticstoolbox` or `MoveIt!`. Where external
+libraries are used (e.g. `spatialmath` for 4×4 wrappers, `urchin` for
+URDF reloading), they appear strictly as cross-validation oracles,
+never as the source of truth.
 
 > **Why this matters.** Off-the-shelf kinematics packages hide the algebra.
 > Implementing a Pieper-decoupled IK *and* a 6×6 geometric Jacobian *and* a
@@ -92,44 +91,44 @@ and macOS via GitHub Actions. The suite is < 2 s wall-clock.
 <table>
 <tr>
 <td align="center" width="33%">
-<img src="figures/problem2_frames.png" alt="DH frames at q=0" width="100%"/><br/>
-<sub><b>Problem 2.</b> The seven DH frames at q = 0, with each frame's RGB triad in place. Used as the geometric ground truth for the rest of the project.</sub>
+<img src="figures/dh_frames.png" alt="DH frames at q=0" width="100%"/><br/>
+<sub><b>DH frames.</b> The seven DH frames at q = 0, with each frame's RGB triad in place. Used as the geometric ground truth for the rest of the project.</sub>
 </td>
 <td align="center" width="33%">
-<img src="figures/problem3_fk_configs.png" alt="Forward kinematics demo" width="100%"/><br/>
-<sub><b>Problem 3.</b> Composite forward kinematics evaluated at the URDF zero pose and at the canonical "ready" pose, plotted as stick figures.</sub>
+<img src="figures/forward_kinematics_configs.png" alt="Forward kinematics demo" width="100%"/><br/>
+<sub><b>Forward kinematics.</b> Composite forward kinematics evaluated at the URDF zero pose and at the canonical "ready" pose, plotted as stick figures.</sub>
 </td>
 <td align="center" width="33%">
-<img src="figures/problem4_joints_panel.png" alt="Per-joint sweeps" width="100%"/><br/>
-<sub><b>Problem 4.</b> Six-up panel: each subplot shows the ready pose (grey) ghosted against the result of perturbing one joint by 0.6–0.8 rad. Builds intuition for what each axis "does".</sub>
+<img src="figures/joint_isolation_panel.png" alt="Per-joint sweeps" width="100%"/><br/>
+<sub><b>Joint isolation.</b> Six-up panel: each subplot shows the ready pose (grey) ghosted against the result of perturbing one joint by 0.6–0.8 rad. Builds intuition for what each axis "does".</sub>
 </td>
 </tr>
 <tr>
 <td align="center">
-<img src="figures/problem4_quintic_q1.png" alt="Quintic profile" width="100%"/><br/>
-<sub><b>Problem 4.</b> Quintic time-scaling of joint 1 from 0 → 0.8 rad in 2 s. Position, velocity and acceleration are all C² and zero at the boundaries.</sub>
+<img src="figures/quintic_profile.png" alt="Quintic profile" width="100%"/><br/>
+<sub><b>Quintic profile.</b> Quintic time-scaling of joint 1 from 0 → 0.8 rad in 2 s. Position, velocity and acceleration are all C² and zero at the boundaries.</sub>
 </td>
 <td align="center">
-<img src="figures/problem5_singular_sweep.png" alt="Wrist singularity sweep" width="100%"/><br/>
-<sub><b>Problem 5.</b> Sweeping q₅ from the ready value down to zero, both σ\_min(J) and the manipulability index w = √det(JJᵀ) collapse — the wrist singularity in numbers.</sub>
+<img src="figures/wrist_singularity_sweep.png" alt="Wrist singularity sweep" width="100%"/><br/>
+<sub><b>Wrist singularity.</b> Sweeping q₅ from the ready value down to zero, both σ\_min(J) and the manipulability index w = √det(JJᵀ) collapse — the wrist singularity in numbers.</sub>
 </td>
 <td align="center">
-<img src="figures/problem6_ik_branch_panel.png" alt="IK branches" width="100%"/><br/>
-<sub><b>Problem 6.</b> All four position-IK branches (elbow up/down × shoulder front/back) for a single flange target. Each is a kinematically distinct way to reach the wrist centre.</sub>
+<img src="figures/ik_branches.png" alt="IK branches" width="100%"/><br/>
+<sub><b>IK branches.</b> All four position-IK branches (elbow up/down × shoulder front/back) for a single flange target. Each is a kinematically distinct way to reach the wrist centre.</sub>
 </td>
 </tr>
 <tr>
 <td align="center">
-<img src="figures/problem6_ik_check.png" alt="FK→IK round-trip" width="100%"/><br/>
-<sub><b>Problem 6.</b> A visual round-trip: target pose (left) and the configuration recovered by the closed-form IK (right). Position error: ≪ 1 µm.</sub>
+<img src="figures/ik_round_trip.png" alt="FK→IK round-trip" width="100%"/><br/>
+<sub><b>IK round-trip.</b> A visual round-trip: target pose (left) and the configuration recovered by the closed-form IK (right). Position error: ≪ 1 µm.</sub>
 </td>
 <td align="center">
-<img src="figures/problem7_joint_velocities.png" alt="Joint velocities check" width="100%"/><br/>
-<sub><b>Problem 7.</b> Joint velocities reconstructed from the inverse velocity equation q̇ = J⁻¹·v\_task (solid) overlaid with finite differences of the joint trajectory (dashed). They agree.</sub>
+<img src="figures/task_space_joint_velocities.png" alt="Joint velocities check" width="100%"/><br/>
+<sub><b>Velocity IK check.</b> Joint velocities reconstructed from the inverse velocity equation q̇ = J⁻¹·v\_task (solid) overlaid with finite differences of the joint trajectory (dashed). They agree.</sub>
 </td>
 <td align="center">
-<img src="figures/problem8_side_by_side.png" alt="DH vs URDF side-by-side" width="100%"/><br/>
-<sub><b>Problem 8.</b> Stick figure (analytic DH) vs. cylinders (auto-generated URDF reloaded by <code>urchin</code>) at the ready pose. The frames coincide to ≤ 50 µm.</sub>
+<img src="figures/urdf_vs_stick.png" alt="DH vs URDF side-by-side" width="100%"/><br/>
+<sub><b>DH vs. URDF.</b> Stick figure (analytic DH) vs. cylinders (auto-generated URDF reloaded by <code>urchin</code>) at the ready pose. The frames coincide to ≤ 50 µm.</sub>
 </td>
 </tr>
 </table>
@@ -139,10 +138,10 @@ and macOS via GitHub Actions. The suite is < 2 s wall-clock.
 
 <table>
 <tr>
-<td align="center"><img src="animations/problem4_motion.gif" alt="Joint-at-a-time quintic" width="100%"/><br/>
-<sub><b>Problem 4.</b> An out-and-back quintic sweep on each axis in turn, with the flange path traced in orange.</sub></td>
-<td align="center"><img src="animations/problem5_velocity.gif" alt="Velocity arrows" width="100%"/><br/>
-<sub><b>Problem 5.</b> Linear- (magenta) and angular- (cyan) velocity arrows of the flange computed from <code>J(q) q̇</code>.</sub></td>
+<td align="center"><img src="animations/joint_sweep.gif" alt="Joint-at-a-time quintic" width="100%"/><br/>
+<sub><b>Joint sweep.</b> An out-and-back quintic sweep on each axis in turn, with the flange path traced in orange.</sub></td>
+<td align="center"><img src="animations/velocity_arrows.gif" alt="Velocity arrows" width="100%"/><br/>
+<sub><b>Velocity arrows.</b> Linear- (magenta) and angular- (cyan) velocity arrows of the flange computed from <code>J(q) q̇</code>.</sub></td>
 </tr>
 </table>
 
@@ -212,16 +211,16 @@ kuka-kr6-kinematics/
 │   ├── viz.py                  # 3-D stick-figure / animation helpers
 │   └── urdf_builder.py         # programmatic URDF generation
 │
-├── scripts/                    # one runnable driver per assignment problem
-│   ├── 01_robot_id.py
-│   ├── 02_dh_frames.py
-│   ├── 03_forward_kinematics.py
-│   ├── 04_joint_trajectories.py
-│   ├── 05_jacobian_singularities.py
-│   ├── 06_inverse_kinematics.py
-│   ├── 07_task_space_trajectory.py
-│   ├── 08_urdf_visualization.py
-│   └── run_all.py              # regenerates every figure & animation
+├── scripts/                    # topical driver scripts
+│   ├── robot_spec.py           # print manufacturer specs + reach sanity check
+│   ├── dh_frames.py            # DH table + 3-D frame visualisation
+│   ├── forward_kinematics.py   # FK at canonical poses
+│   ├── joint_trajectories.py   # quintic profiles + per-joint sweep animation
+│   ├── jacobian_singularities.py   # J(q), FD verification, wrist singularity
+│   ├── inverse_kinematics.py   # closed-form IK + branch enumeration
+│   ├── task_space_trajectory.py    # straight-line task-space path with IK
+│   ├── urdf_demo.py            # generate URDF and compare with DH
+│   └── run_all.py              # regenerate every figure & animation
 │
 ├── tests/                      # 39 pytest tests (FK, Jacobian, IK, trajectories, URDF)
 │   ├── test_dh.py
@@ -233,12 +232,6 @@ kuka-kr6-kinematics/
 ├── figures/                    # static PNGs emitted by the drivers
 ├── animations/                 # animated GIFs
 ├── urdf/kr6_sdh.urdf           # auto-generated URDF
-│
-├── docs/                       # academic deliverables (report, slides, derivations)
-│   ├── final_report.docx
-│   ├── presentation.pdf
-│   ├── exploration_notebook.ipynb
-│   └── handwritten_derivations.pdf
 │
 ├── pyproject.toml              # PEP 517/518 build + tooling configuration
 ├── requirements.txt            # runtime dependencies
@@ -308,14 +301,14 @@ Or run the drivers individually:
 
 | Driver | Outputs |
 | :--- | :--- |
-| `python scripts/01_robot_id.py` | text-only manufacturer spec dump |
-| `python scripts/02_dh_frames.py` | `figures/problem2_frames.png` |
-| `python scripts/03_forward_kinematics.py` | `figures/problem3_fk_configs.png` |
-| `python scripts/04_joint_trajectories.py` | `problem4_quintic_q1.png`, `problem4_joints_panel.png`, `animations/problem4_motion.gif` |
-| `python scripts/05_jacobian_singularities.py` | `problem5_singular_sweep.png`, `animations/problem5_velocity.gif` |
-| `python scripts/06_inverse_kinematics.py` | `problem6_ik_check.png`, `problem6_ik_branch_panel.png` |
-| `python scripts/07_task_space_trajectory.py` | `problem7_*.png`, `problem7_Q.npy`, `animations/problem7_animation.gif` |
-| `python scripts/08_urdf_visualization.py` | `urdf/kr6_sdh.urdf`, `problem8_side_by_side.png`, `animations/problem8_urdf_vs_stick.gif` |
+| `python scripts/robot_spec.py` | text-only manufacturer spec dump |
+| `python scripts/dh_frames.py` | `figures/dh_frames.png` |
+| `python scripts/forward_kinematics.py` | `figures/forward_kinematics_configs.png` |
+| `python scripts/joint_trajectories.py` | `quintic_profile.png`, `joint_isolation_panel.png`, `animations/joint_sweep.gif` |
+| `python scripts/jacobian_singularities.py` | `wrist_singularity_sweep.png`, `animations/velocity_arrows.gif` |
+| `python scripts/inverse_kinematics.py` | `ik_round_trip.png`, `ik_branches.png` |
+| `python scripts/task_space_trajectory.py` | `task_space_*.png`, `task_space_Q.npy`, `animations/task_space_motion.gif` |
+| `python scripts/urdf_demo.py` | `urdf/kr6_sdh.urdf`, `urdf_vs_stick.png`, `animations/urdf_vs_stick.gif` |
 
 The drivers are deterministic (RNG-free except for the verification scripts, which are seeded) — re-running on the same machine always produces byte-identical artefacts.
 
@@ -333,7 +326,7 @@ All numbers below are produced by `make test` and by the driver scripts; they're
 | Closed-form IK round-trip, max over 200 random configs (away from wrist sing.) | **0.00 mm position, 2.1 × 10⁻¹⁵ rotation** |
 | `J(q) · ik_velocity(q, v, ω)` recovers the requested task twist | exact to machine precision |
 | `urchin` URDF FK vs. analytic DH FK at q\_ready | ≤ **50 µm** position, < 1 × 10⁻⁴ rotation |
-| Wrist-singularity sweep: σ\_min(J), w(J) as q₅ → 0 | both → 0 (by inspection of `figures/problem5_singular_sweep.png`) |
+| Wrist-singularity sweep: σ\_min(J), w(J) as q₅ → 0 | both → 0 (by inspection of `figures/wrist_singularity_sweep.png`) |
 | Quintic boundary conditions (q, q̇, q̈ at t₀ and t\_f) | exact to floating-point precision |
 | LSPB cruise velocity attained on the linear segment | within 10⁻³ m/s |
 
@@ -433,8 +426,8 @@ The test-suite covers:
 
 ## Citation
 
-If you use this code in academic or industrial work, please cite it via
-the [`CITATION.cff`](CITATION.cff) file or BibTeX below:
+If you reference this code, please cite via the
+[`CITATION.cff`](CITATION.cff) file or BibTeX below:
 
 ```bibtex
 @software{janga2025kr6,
@@ -455,7 +448,6 @@ the [`CITATION.cff`](CITATION.cff) file or BibTeX below:
 
 <div align="center">
 <sub>
-Built at Fort Lewis College — Department of Mechanical &amp; Mechatronic Engineering.<br/>
 <i>"The robot has six joints. The math has six joints. They had better agree."</i>
 </sub>
 </div>

@@ -1,6 +1,6 @@
 """
-Problem 6 — Closed-form inverse kinematics
-==========================================
+Closed-form inverse kinematics demo
+===================================
 
 Verify the Pieper-decoupled IK solver via:
 
@@ -15,8 +15,8 @@ Verify the Pieper-decoupled IK solver via:
 
 Outputs
 -------
-- ``figures/problem6_ik_check.png``
-- ``figures/problem6_ik_branch_panel.png``
+- ``figures/ik_round_trip.png``
+- ``figures/ik_branches.png``
 """
 
 from __future__ import annotations
@@ -85,7 +85,7 @@ def solve_and_plot() -> None:
         draw_stick_figure(ax, q, show_frames=False)
         draw_frame(ax, kr6_fk(q), length=0.08)
     plt.tight_layout()
-    out = FIG_DIR / "problem6_ik_check.png"
+    out = FIG_DIR / "ik_round_trip.png"
     plt.savefig(out, dpi=140, bbox_inches="tight")
     plt.close()
     print(f"saved {out}")
@@ -118,7 +118,7 @@ def plot_branches() -> None:
                 ax.text2D(0.2, 0.5, str(e), transform=ax.transAxes)
             idx += 1
     plt.tight_layout()
-    out = FIG_DIR / "problem6_ik_branch_panel.png"
+    out = FIG_DIR / "ik_branches.png"
     plt.savefig(out, dpi=140, bbox_inches="tight")
     plt.close()
     print(f"saved {out}")
@@ -154,7 +154,7 @@ def scatter_round_trip(n_samples: int = 200, seed: int = 1) -> None:
 
 def main() -> None:
     print("=" * 68)
-    print("  Problem 6 — Closed-form inverse kinematics (Pieper)")
+    print("  Closed-form inverse kinematics (Pieper)")
     print("=" * 68)
     solve_and_plot()
     plot_branches()

@@ -102,8 +102,6 @@ ignore = [
     "N806",  # variable names (allow Q, T, R, J for math objects)
 ]
 
-[tool.ruff.lint.per-file-ignores]
-"scripts/0*_*.py" = ["N999"]   # numbered driver scripts intentionally start with a digit
 
 [tool.mypy]
 python_version            = "3.9"

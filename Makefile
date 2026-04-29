@@ -27,19 +27,18 @@ typecheck:  ## mypy type-check
 	$(PY) -m mypy kr6_kinematics
 
 figures:  ## regenerate every figure (no animations)
-	$(PY) scripts/01_robot_id.py
-	$(PY) scripts/02_dh_frames.py
-	$(PY) scripts/03_forward_kinematics.py
-	$(PY) -c "import scripts._paths; from scripts.04_joint_trajectories import quintic_profile_figure, joints_panel_figure; quintic_profile_figure(); joints_panel_figure()" 2>/dev/null \
-	  || $(PY) scripts/04_joint_trajectories.py
-	$(PY) scripts/05_jacobian_singularities.py
-	$(PY) scripts/06_inverse_kinematics.py
+	$(PY) scripts/robot_spec.py
+	$(PY) scripts/dh_frames.py
+	$(PY) scripts/forward_kinematics.py
+	$(PY) scripts/joint_trajectories.py
+	$(PY) scripts/jacobian_singularities.py
+	$(PY) scripts/inverse_kinematics.py
 
 animations:  ## regenerate every animated GIF
-	$(PY) scripts/04_joint_trajectories.py
-	$(PY) scripts/05_jacobian_singularities.py
-	$(PY) scripts/07_task_space_trajectory.py
-	$(PY) scripts/08_urdf_visualization.py
+	$(PY) scripts/joint_trajectories.py
+	$(PY) scripts/jacobian_singularities.py
+	$(PY) scripts/task_space_trajectory.py
+	$(PY) scripts/urdf_demo.py
 
 all:  ## regenerate every figure, animation and the URDF
 	$(PY) scripts/run_all.py

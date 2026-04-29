@@ -1,6 +1,6 @@
 """
-Problem 5 — Jacobian and singularity analysis
-=============================================
+Jacobian and singularity analysis
+=================================
 
 Compute and verify the 6×6 geometric Jacobian, sweep the wrist pitch
 :math:`q_5` through zero to expose the *wrist singularity*, and render
@@ -16,8 +16,8 @@ random configurations.  The reported max-norm error should be of order
 
 Outputs
 -------
-- ``figures/problem5_singular_sweep.png``
-- ``animations/problem5_velocity.gif``
+- ``figures/wrist_singularity_sweep.png``
+- ``animations/velocity_arrows.gif``
 """
 
 from __future__ import annotations
@@ -113,7 +113,7 @@ def singular_sweep_figure() -> None:
     axes[1].legend(loc="upper right")
 
     plt.tight_layout()
-    out = FIG_DIR / "problem5_singular_sweep.png"
+    out = FIG_DIR / "wrist_singularity_sweep.png"
     plt.savefig(out, dpi=140)
     plt.close()
     print(f"saved {out}")
@@ -152,7 +152,7 @@ def velocity_arrows_animation() -> None:
             bbox=dict(facecolor="white", alpha=0.7, edgecolor="none"),
         )
 
-    gif = ANIM_DIR / "problem5_velocity.gif"
+    gif = ANIM_DIR / "velocity_arrows.gif"
     animate_joint_trajectory(
         Q,
         title="Flange v (magenta) and ω (cyan)",
@@ -165,7 +165,7 @@ def velocity_arrows_animation() -> None:
 
 def main() -> None:
     print("=" * 68)
-    print("  Problem 5 — Jacobian and singularity analysis")
+    print("  Jacobian and singularity analysis")
     print("=" * 68)
 
     print_jacobian_at_ready()

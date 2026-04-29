@@ -1,17 +1,17 @@
 """
-Problem 2 — DH parameter table and link frames
-==============================================
+DH parameter table and link frames
+==================================
 
 Print the standard-DH table used throughout the project and render a
 3-D figure showing every DH frame at the URDF zero configuration.
 
 Output
 ------
-- ``figures/problem2_frames.png``
+- ``figures/dh_frames.png``
 
 Run with::
 
-    python scripts/02_dh_frames.py
+    python scripts/dh_frames.py
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ def print_dh_table() -> None:
 def plot_frames_at_zero() -> None:
     fig = plt.figure(figsize=(9, 7))
     ax = fig.add_subplot(111, projection="3d")
-    setup_3d_axes(ax, lim=1.1, title="Problem 2: DH frames at q = 0")
+    setup_3d_axes(ax, lim=1.1, title="DH frames at q = 0")
     draw_stick_figure(ax, Q_ZERO, show_frames=True, frame_len=0.10)
 
     for i, T in enumerate(kr6_frames(Q_ZERO)):
@@ -43,7 +43,7 @@ def plot_frames_at_zero() -> None:
             f"frame {i}", fontsize=8, color="navy",
         )
 
-    out = FIG_DIR / "problem2_frames.png"
+    out = FIG_DIR / "dh_frames.png"
     plt.tight_layout()
     plt.savefig(out, dpi=140, bbox_inches="tight")
     plt.close()
@@ -52,7 +52,7 @@ def plot_frames_at_zero() -> None:
 
 def main() -> None:
     print("=" * 68)
-    print("  Problem 2 — DH parameter table and link frames")
+    print("  DH parameter table and link frames")
     print("=" * 68)
     print()
     print_dh_table()
