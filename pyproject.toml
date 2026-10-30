@@ -7,7 +7,7 @@ name        = "kr6-kinematics"
 version     = "1.0.0"
 description = "From-scratch forward and inverse kinematics, Jacobian analysis, and trajectory planning for the KUKA KR 6 R900 sixx."
 readme      = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license     = { text = "MIT" }
 authors     = [
     { name = "Bliss Janga" },
@@ -31,7 +31,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -104,7 +103,7 @@ ignore = [
 
 
 [tool.mypy]
-python_version            = "3.9"
+python_version            = "3.10"
 ignore_missing_imports    = true
 disallow_incomplete_defs  = false
 disallow_untyped_defs     = false
