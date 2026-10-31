@@ -431,10 +431,10 @@ If you reference this code, please cite via the
 [`CITATION.cff`](CITATION.cff) file or BibTeX below:
 
 ```bibtex
-@software{janga2025kr6,
+@software{bliss2026kr6,
   author  = {Bliss, Jangara},
   title   = {{KUKA KR 6 R900 sixx} -- Complete Kinematics Suite},
-  year    = {2025},
+  year    = {2026},
   version = {1.0.0},
   url     = {https://github.com/Janga786/kuka-kr6-kinematics},
   license = {MIT}
