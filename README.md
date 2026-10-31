@@ -2,14 +2,14 @@
 
 # KUKA KR 6 R900 sixx · Complete Kinematics Suite
 
-**A from-scratch implementation of forward & inverse kinematics, the geometric Jacobian, singularity diagnostics, and joint- / task-space trajectory planning for a real 6-DoF industrial manipulator — verified against the manufacturer's data sheet, finite-difference derivatives, and a programmatically-generated URDF.**
+**A from-scratch implementation of forward & inverse kinematics, the geometric Jacobian, singularity diagnostics, and joint- / task-space trajectory planning for a real 6-DoF industrial manipulator — built as an Intro to Robotics (ENGR 431) final project and later packaged as a public library; verified against the manufacturer's data sheet, finite-difference derivatives, and a programmatically-generated URDF.**
 
 [![CI](https://github.com/Janga786/kuka-kr6-kinematics/actions/workflows/ci.yml/badge.svg)](https://github.com/Janga786/kuka-kr6-kinematics/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Tests](https://img.shields.io/badge/tests-39%20passing-brightgreen.svg)](#verification--numerical-results)
-[![DOI ready](https://img.shields.io/badge/citation-CITATION.cff-orange.svg)](CITATION.cff)
+[![Citation](https://img.shields.io/badge/citation-CITATION.cff-orange.svg)](CITATION.cff)
 
 <br/>
 
@@ -63,8 +63,9 @@ never as the source of truth.
 
 > **Why this matters.** Off-the-shelf kinematics packages hide the algebra.
 > Implementing a Pieper-decoupled IK *and* a 6×6 geometric Jacobian *and* a
-> URDF round-trip — and then proving they agree to floating-point precision
-> — is the only way to be sure your understanding is right.
+> URDF round-trip — and then proving they agree within tight numerical
+> tolerances (≤ 50 µm against the generated URDF; ~1e-10 Jacobian
+> finite-difference error) — is the only way to be sure your understanding is right.
 
 ---
 
@@ -431,7 +432,7 @@ If you reference this code, please cite via the
 
 ```bibtex
 @software{janga2025kr6,
-  author  = {Janga, Bliss},
+  author  = {Bliss, Jangara},
   title   = {{KUKA KR 6 R900 sixx} -- Complete Kinematics Suite},
   year    = {2025},
   version = {1.0.0},
