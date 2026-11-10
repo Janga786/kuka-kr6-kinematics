@@ -37,7 +37,7 @@ def test_ik_round_trip_at_ready():
 
 
 def test_ik_round_trip_random(rng):
-    """200 random configurations must round-trip to <1e-3 mm position error."""
+    """100 random configurations must round-trip to <1e-3 mm position error."""
     n_trials = 100
     n_ok = 0
     pos_max = 0.0
