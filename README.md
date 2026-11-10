@@ -1,91 +1,71 @@
-<div align="center">
+# KUKA KR 6 R900 sixx kinematics in Python
 
-# KUKA KR 6 R900 sixx · Complete Kinematics Suite
-
-**A from-scratch implementation of forward & inverse kinematics, the geometric Jacobian, singularity diagnostics, and joint- / task-space trajectory planning for a real 6-DoF industrial manipulator — built as an Intro to Robotics (ENGR 431) final project and later packaged as a public library; verified against the manufacturer's data sheet, finite-difference derivatives, and a programmatically-generated URDF.**
+Forward kinematics, closed-form inverse kinematics, the 6x6 geometric
+Jacobian, singularity checks, and joint- and task-space trajectories for the
+KUKA KR 6 R900 sixx, a 6-axis industrial arm. This began as my final project
+for Intro to Robotics (ENGR 431) at Fort Lewis College; I later cleaned it
+up into a small Python package with tests. It is analysis and simulation
+only; it was not run on a physical KUKA arm.
 
 [![CI](https://github.com/Janga786/kuka-kr6-kinematics/actions/workflows/ci.yml/badge.svg)](https://github.com/Janga786/kuka-kr6-kinematics/actions/workflows/ci.yml)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Tests](https://img.shields.io/badge/tests-39%20passing-brightgreen.svg)](#verification--numerical-results)
-[![Citation](https://img.shields.io/badge/citation-CITATION.cff-orange.svg)](CITATION.cff)
 
-<br/>
-
-<img src="animations/task_space_motion.gif" alt="KR 6 task-space trajectory tracking" width="48%"/>
+<img src="animations/task_space_motion.gif" alt="KR 6 following a straight-line task-space path" width="48%"/>
 &nbsp;
-<img src="animations/urdf_vs_stick.gif" alt="DH stick figure vs. URDF cross-validation" width="48%"/>
+<img src="animations/urdf_vs_stick.gif" alt="DH stick figure and generated URDF moving together" width="48%"/>
 
-<br/>
-<sub><i>Left:</i> task-space straight-line motion executed via closed-form inverse position kinematics + Jacobian-inverse velocity kinematics.<br/>
-<i>Right:</i> the same trajectory rendered simultaneously through the analytic DH chain (left panel) and a programmatically-generated URDF reloaded by <code>urchin</code> (right panel) — the two coincide to <strong>≤ 50 µm</strong>.</sub>
+<sub><i>Left:</i> a straight-line task-space path executed with the closed-form position IK and Jacobian-based velocity IK.
+<i>Right:</i> the same motion through the analytic DH chain and through the generated URDF reloaded by <code>urchin</code>.</sub>
 
-</div>
+## What I derived and implemented by hand
 
----
+All of the kinematics are written directly in NumPy from the robot's geometry
+and data sheet. No robotics toolbox (for example `roboticstoolbox` or MoveIt)
+computes any of it.
 
-## Contents
+- **DH model and forward kinematics** (`kr6_kinematics/dh.py`): the
+  standard-DH table for the KR 6 and the 4x4 link transforms, composed into
+  the flange pose.
+- **Geometric Jacobian** (`jacobian.py`): each column built from the joint
+  axis and position, `[z_i x (p_e - p_i); z_i]`, plus Yoshikawa
+  manipulability and a singularity check.
+- **Closed-form inverse kinematics** (`ik.py`): Pieper decoupling at the
+  spherical wrist, planar geometry for joints 1-3 and a ZYZ Euler
+  decomposition for joints 4-6, with elbow-up/down selection. Velocity IK
+  solves `J q_dot = twist`.
+- **Trajectories** (`trajectories.py`): quintic time scaling (with zero
+  boundary velocity and acceleration this is the minimum-jerk profile) and
+  LSPB, plus a straight-line task-space path.
+- **URDF generator** (`urdf_builder.py`): writes a URDF whose link frames
+  match the DH frames, used as an independent check.
 
-- [Overview](#overview)
-- [Highlights](#highlights)
-- [Gallery](#gallery)
-- [Mathematical foundations](#mathematical-foundations)
-- [Repository layout](#repository-layout)
-- [Quick start](#quick-start)
-- [Reproducing every figure & animation](#reproducing-every-figure--animation)
-- [Verification & numerical results](#verification--numerical-results)
-- [Robot specifications](#robot-specifications)
-- [API reference](#api-reference)
-- [Testing](#testing)
-- [Roadmap & known limitations](#roadmap--known-limitations)
-- [References](#references)
-- [Citation](#citation)
-- [License](#license)
+Libraries used: `spatialmath`'s `SE3` class only as a container for 4x4
+transforms, `urchin` only to reload the generated URDF for cross-checking, and
+`matplotlib` for figures.
 
----
+## How it is checked
 
-## Overview
+39 pytest tests (all pass in a few seconds; CI runs them on Python
+3.10-3.12, Ubuntu and macOS). The main checks:
 
-A small, well-tested Python library that implements the full kinematic
-stack of the **KUKA KR 6 R900 sixx** — a 6-axis industrial robot from
-KUKA's KR AGILUS family widely used in pick-and-place, welding, and
-small-part assembly — without leaning on any black-box robotics package
-for the math.
-
-Every result here — the DH parameters, the closed-form IK, the
-Jacobian, the trajectories, even the URDF — is derived in the source
-from the underlying geometry rather than borrowed from an off-the-shelf
-package such as `roboticstoolbox` or `MoveIt!`. Where external
-libraries are used (e.g. `spatialmath` for 4×4 wrappers, `urchin` for
-URDF reloading), they appear strictly as cross-validation oracles,
-never as the source of truth.
-
-> **Why this matters.** Off-the-shelf kinematics packages hide the algebra.
-> Implementing a Pieper-decoupled IK *and* a 6×6 geometric Jacobian *and* a
-> URDF round-trip — and then proving they agree within tight numerical
-> tolerances (≤ 50 µm against the generated URDF; ~1e-10 Jacobian
-> finite-difference error) — is the only way to be sure your understanding is right.
-
----
-
-## Highlights
-
-| Capability | Implementation | Verified to |
+| Check | Result | Where |
 | :--- | :--- | :--- |
-| Forward kinematics from standard-DH parameters | `kr6_kinematics.dh.kr6_fk` | 0.901 m wrist-centre reach (KUKA spec) within < 5 mm |
-| 6 × 6 geometric Jacobian (analytic) | `kr6_kinematics.jacobian.jacobian` | central-finite-difference J: max element-wise error ≈ **3 × 10⁻¹⁰** |
-| Singularity diagnostics (Yoshikawa manipulability) | `kr6_kinematics.jacobian.manipulability` / `is_singular` | wrist-singularity sweep: σ\_min, w → 0 as q₅ → 0 |
-| **Closed-form** inverse position kinematics (Pieper) | `kr6_kinematics.ik.ik_position` | FK→IK→FK round-trip on 200 random configs: max ≈ **2 × 10⁻¹⁵ m / 2 × 10⁻¹⁵ rad** |
-| Inverse velocity kinematics | `kr6_kinematics.ik.ik_velocity` | recovers task twist exactly: `J · q̇ = ξ` to machine precision |
-| 5th-order **quintic** & LSPB trajectories | `kr6_kinematics.trajectories` | derivative checks vs. finite difference (`np.gradient`) |
-| Auto-generated URDF whose link frames *equal* the DH frames | `kr6_kinematics.urdf_builder.write_urdf` | `urchin` URDF FK vs. analytic DH FK: ≤ 50 µm at q\_ready |
-| Stick-figure / URDF-cylinder visualisation & GIF animation | `kr6_kinematics.viz` | – |
+| Wrist-centre reach at q = 0 vs. KUKA data sheet (0.901 m) | within 5 mm | `tests/test_dh.py` |
+| Analytic vs. central finite-difference Jacobian | under 1e-5 in the test (30 configs); about 3e-10 max over 50 configs in the driver script | `tests/test_jacobian.py`, `scripts/jacobian_singularities.py` |
+| FK -> IK -> FK round trip, shoulder-front branch | under 1 µm in the test (100 random configs, at least 80% must solve); 200 of 200 solved in the driver script, max rotation error about 2e-15 | `tests/test_ik.py`, `scripts/inverse_kinematics.py` |
+| Velocity IK reproduces the requested twist | to 1e-12 | `tests/test_ik.py` |
+| Generated URDF (via `urchin`) vs. analytic DH at the ready pose | test tolerance 50 µm; measured about 2 µm | `tests/test_urdf.py`, `scripts/urdf_demo.py` |
+| Manipulability near the wrist singularity (q5 -> 0) | drops below 5% of its ready-pose value | `tests/test_jacobian.py` |
+| Quintic and LSPB boundary conditions | exact to floating-point precision | `tests/test_trajectories.py` |
 
-**39 pytest tests** run on every push across Python 3.10/3.11/3.12 on Ubuntu
-and macOS via GitHub Actions. The suite is < 2 s wall-clock.
+Known limits are listed under [Limitations](#limitations).
 
----
+```bash
+python -m venv .venv && source .venv/bin/activate
+make dev     # pip install -e ".[dev]"
+make test    # 39 tests
+make all     # regenerate every figure and animation
+```
 
 ## Gallery
 
@@ -101,7 +81,7 @@ and macOS via GitHub Actions. The suite is < 2 s wall-clock.
 </td>
 <td align="center" width="33%">
 <img src="figures/joint_isolation_panel.png" alt="Per-joint sweeps" width="100%"/><br/>
-<sub><b>Joint isolation.</b> Six-up panel: each subplot shows the ready pose (grey) ghosted against the result of perturbing one joint by 0.6–0.8 rad. Builds intuition for what each axis "does".</sub>
+<sub><b>Joint isolation.</b> Six-up panel: each subplot shows the ready pose (grey) ghosted against the result of perturbing one joint by 0.6–0.8 rad.</sub>
 </td>
 </tr>
 <tr>
@@ -115,13 +95,13 @@ and macOS via GitHub Actions. The suite is < 2 s wall-clock.
 </td>
 <td align="center">
 <img src="figures/ik_branches.png" alt="IK branches" width="100%"/><br/>
-<sub><b>IK branches.</b> All four position-IK branches (elbow up/down × shoulder front/back) for a single flange target. Each is a kinematically distinct way to reach the wrist centre.</sub>
+<sub><b>IK branches.</b> The four position-IK branches (elbow up/down × shoulder front/back) for one flange target. Only the two shoulder-front branches are verified to reach the target; see Limitations.</sub>
 </td>
 </tr>
 <tr>
 <td align="center">
 <img src="figures/ik_round_trip.png" alt="FK→IK round-trip" width="100%"/><br/>
-<sub><b>IK round-trip.</b> A visual round-trip: target pose (left) and the configuration recovered by the closed-form IK (right). Position error: ≪ 1 µm.</sub>
+<sub><b>IK round-trip.</b> A visual round-trip: target pose (left) and the configuration recovered by the closed-form IK (right). Position error below 1 µm.</sub>
 </td>
 <td align="center">
 <img src="figures/task_space_joint_velocities.png" alt="Joint velocities check" width="100%"/><br/>
@@ -129,7 +109,7 @@ and macOS via GitHub Actions. The suite is < 2 s wall-clock.
 </td>
 <td align="center">
 <img src="figures/urdf_vs_stick.png" alt="DH vs URDF side-by-side" width="100%"/><br/>
-<sub><b>DH vs. URDF.</b> Stick figure (analytic DH) vs. cylinders (auto-generated URDF reloaded by <code>urchin</code>) at the ready pose. The frames coincide to ≤ 50 µm.</sub>
+<sub><b>DH vs. URDF.</b> Stick figure (analytic DH) vs. cylinders (auto-generated URDF reloaded by <code>urchin</code>) at the ready pose. The frames agree to within the 50 µm test tolerance.</sub>
 </td>
 </tr>
 </table>
@@ -148,11 +128,7 @@ and macOS via GitHub Actions. The suite is < 2 s wall-clock.
 
 </details>
 
----
-
 ## Mathematical foundations
-
-> Everything in the implementation is derived from these three building blocks. Skip if familiar.
 
 ### 1. Standard-DH link transform
 
@@ -181,7 +157,7 @@ J_i(q) \;=\; \begin{bmatrix} \hat z_i \times (p_e - p_i) \\ \hat z_i \end{bmatri
 \begin{bmatrix} v_e \\ \omega_e \end{bmatrix} \;=\; J(q)\,\dot q,
 $$
 
-with $\hat z_i$ the joint axis and $p_i, p_e$ the joint and end-effector positions in the base frame. Because the manipulator is non-redundant, **inverse velocity kinematics reduces to ``np.linalg.solve(J, twist)``**.
+with $\hat z_i$ the joint axis and $p_i, p_e$ the joint and end-effector positions in the base frame. Because the manipulator is non-redundant, inverse velocity kinematics reduces to `np.linalg.solve(J, twist)`.
 
 ### 3. Pieper's spherical-wrist decoupling
 
@@ -191,13 +167,107 @@ $$
 p_{\mathrm{wc}} \;=\; p_d - d_6\,R_d\,\hat z,
 $$
 
-so $q_1, q_2, q_3$ are determined by the planar 2-link geometry of the upper arm and the effective forearm, and $q_4, q_5, q_6$ are recovered by ZYZ-Euler decomposition of $R_3^6 = (R_0^3)^{\!\top} R_d$. This produces a **closed-form** IK with ≤ 8 solution branches; the implementation returns one (selectable by `elbow_up`, `shoulder_front`).
+so $q_1, q_2, q_3$ are determined by the planar 2-link geometry of the upper arm and the effective forearm, and $q_4, q_5, q_6$ are recovered by ZYZ-Euler decomposition of $R_3^6 = (R_0^3)^{\!\top} R_d$. This produces a **closed-form** IK with ≤ 8 solution branches; the implementation returns one, selected by `elbow_up` and `shoulder_front`.
 
 ### 4. Quintic time-scaling
 
-A 5th-order polynomial $q(t) = \sum_{k=0}^{5} a_k t^k$ has six coefficients — exactly enough to satisfy boundary $q, \dot q, \ddot q$ on both ends. The coefficients are the unique solution of a 6 × 6 linear system. In the code (`kr6_kinematics.trajectories.quintic`) this is solved directly with `np.linalg.solve`, no symbolic algebra needed.
+A 5th-order polynomial $q(t) = \sum_{k=0}^{5} a_k t^k$ has six coefficients — exactly enough to satisfy boundary $q, \dot q, \ddot q$ on both ends. The coefficients are the unique solution of a 6 × 6 linear system. In the code (`kr6_kinematics.trajectories.quintic`) this is solved directly with `np.linalg.solve`. With zero velocity and acceleration at both ends, the result is the minimum-jerk profile.
 
----
+## Usage
+
+Install with `make dev` (or `pip install -e ".[dev]"`). Dependencies: `numpy`, `matplotlib`, `spatialmath-python`, `urchin`, `pillow`.
+
+```python
+import numpy as np
+from kr6_kinematics import (
+    Q_READY, kr6_fk, jacobian, ik_position, manipulability,
+)
+
+# 1. forward kinematics
+T = kr6_fk(Q_READY)
+print("flange position:", np.round(T.t, 4))
+
+# 2. round-trip the closed-form IK
+q_back = ik_position(T, elbow_up=True, shoulder_front=True)
+assert np.allclose(kr6_fk(q_back).A, T.A, atol=1e-10)
+
+# 3. inspect the Jacobian and manipulability at q_ready
+J = jacobian(Q_READY)
+print("σ(J):", np.round(np.linalg.svd(J, compute_uv=False), 4))
+print("w   :", manipulability(Q_READY))
+```
+
+## Reproducing every figure & animation
+
+```bash
+make all
+```
+
+Or run the drivers individually:
+
+| Driver | Outputs |
+| :--- | :--- |
+| `python scripts/robot_spec.py` | text-only manufacturer spec dump |
+| `python scripts/dh_frames.py` | `figures/dh_frames.png` |
+| `python scripts/forward_kinematics.py` | `figures/forward_kinematics_configs.png` |
+| `python scripts/joint_trajectories.py` | `quintic_profile.png`, `joint_isolation_panel.png`, `animations/joint_sweep.gif` |
+| `python scripts/jacobian_singularities.py` | `wrist_singularity_sweep.png`, `animations/velocity_arrows.gif` |
+| `python scripts/inverse_kinematics.py` | `ik_round_trip.png`, `ik_branches.png` |
+| `python scripts/task_space_trajectory.py` | `task_space_*.png`, `task_space_Q.npy`, `animations/task_space_motion.gif` |
+| `python scripts/urdf_demo.py` | `urdf/kr6_sdh.urdf`, `urdf_vs_stick.png`, `animations/urdf_vs_stick.gif` |
+
+The verification scripts use fixed random seeds, so their printed numbers repeat from run to run.
+
+## Robot specifications
+
+| Parameter | Value | Source |
+| :--- | :--- | :--- |
+| Manufacturer / model | KUKA Roboter GmbH · KR 6 R900 sixx (KR AGILUS family) | KUKA OpInst (2015) |
+| Number of axes | 6 (all revolute) | KUKA OpInst |
+| Reach | 0.901 m to wrist centre, 0.981 m to flange | KUKA OpInst |
+| Payload | 6 kg max (3 kg rated for optimal cycle time) | KUKA OpInst |
+| Repeatability | ± 0.03 mm (ISO 9283) | KUKA OpInst |
+| Working envelope | 2.85 m³ | KUKA OpInst |
+| Joint limits q\_min (deg) | [−170, −190, −120, −185, −120, −350] | KUKA OpInst |
+| Joint limits q\_max (deg) | [+170, +45, +156, +185, +120, +350] | KUKA OpInst |
+| Joint speeds q̇\_max (rad/s) | [6.28, 5.24, 6.28, 6.65, 6.77, 10.73] | KUKA OpInst |
+| DH parameters | see `kr6_kinematics/dh.py · KR6_SDH` | this repo |
+
+## API reference
+
+The package exports 25 public names. See the module docstrings
+(`pydoc kr6_kinematics`) and the tests for usage.
+
+| Group | Names |
+| :--- | :--- |
+| DH parameters & FK | `KR6_SDH`, `Q_ZERO`, `Q_READY`, `JOINT_NAMES`, `dh_link`, `dh_link_SE3`, `kr6_frames`, `kr6_fk` |
+| Joint limits | `Q_MIN`, `Q_MAX`, `QD_MAX`, `clip_to_limits`, `in_limits` |
+| Velocity kinematics | `jacobian`, `manipulability`, `is_singular` |
+| Inverse kinematics | `ik_position`, `ik_velocity` |
+| Trajectories | `quintic`, `quintic_vec`, `lspb` |
+| Visualisation | `setup_3d_axes`, `draw_frame`, `draw_stick_figure`, `animate_joint_trajectory` |
+
+## Testing
+
+```bash
+make test                                       # 39 tests
+python -m pytest tests/test_jacobian.py -v      # one module, verbose
+python -m pytest tests/ --cov=kr6_kinematics    # with coverage (needs pytest-cov)
+```
+
+The test-suite covers:
+
+- DH transform shape, orthonormality and base-frame conventions
+- FK numerical sanity (manufacturer reach, smoothness under perturbation)
+- Joint-limit clipping and predicate
+- Analytic vs. finite-difference Jacobian agreement
+- Manipulability collapse near the wrist singularity
+- IK round-trip (one fixed config + 100 random, shoulder-front branch)
+- IK velocity vs. Jacobian inverse, and forward consistency `J · q̇ = ξ`
+- Quintic / quintic\_vec / LSPB boundary conditions and derivative consistency
+- Generated-URDF parseability
+- `urchin` URDF FK vs. analytic DH FK
+- The committed URDF stays in sync with `build_urdf_string()`
 
 ## Repository layout
 
@@ -223,7 +293,7 @@ kuka-kr6-kinematics/
 │   ├── urdf_demo.py            # generate URDF and compare with DH
 │   └── run_all.py              # regenerate every figure & animation
 │
-├── tests/                      # 39 pytest tests (FK, Jacobian, IK, trajectories, URDF)
+├── tests/                      # 39 pytest tests
 │   ├── test_dh.py
 │   ├── test_jacobian.py
 │   ├── test_ik.py
@@ -238,168 +308,19 @@ kuka-kr6-kinematics/
 ├── requirements.txt            # runtime dependencies
 ├── requirements-dev.txt        # + pytest, ruff, mypy
 ├── Makefile                    # `make install`, `make test`, `make all`
-├── .github/workflows/ci.yml    # multi-OS / multi-Python CI
+├── .github/workflows/ci.yml    # CI: tests on Ubuntu/macOS, Python 3.10-3.12
 ├── CITATION.cff
 ├── CONTRIBUTING.md
 ├── LICENSE                     # MIT
 └── README.md
 ```
 
----
-
-## Quick start
-
-```bash
-git clone https://github.com/Janga786/kuka-kr6-kinematics.git
-cd kuka-kr6-kinematics
-
-# create a virtual environment (recommended)
-python -m venv .venv && source .venv/bin/activate
-
-# editable install + dev tools
-make dev           # ⇔  pip install -e ".[dev]"
-
-# run the test-suite
-make test          # 39 passed in < 2 s
-
-# regenerate every figure and animation
-make all
-```
-
-Dependencies are intentionally light: `numpy`, `matplotlib`, `spatialmath-python`, `urchin`, `pillow`. Tested on Python 3.10, 3.11, 3.12.
-
-### Hello, world
-
-```python
-import numpy as np
-from kr6_kinematics import (
-    Q_READY, kr6_fk, jacobian, ik_position, manipulability,
-)
-
-# 1. forward kinematics
-T = kr6_fk(Q_READY)
-print("flange position:", np.round(T.t, 4))
-
-# 2. round-trip the closed-form IK
-q_back = ik_position(T, elbow_up=True, shoulder_front=True)
-assert np.allclose(kr6_fk(q_back).A, T.A, atol=1e-10)
-
-# 3. inspect the Jacobian and manipulability at q_ready
-J = jacobian(Q_READY)
-print("σ(J):", np.round(np.linalg.svd(J, compute_uv=False), 4))
-print("w   :", manipulability(Q_READY))
-```
-
----
-
-## Reproducing every figure & animation
-
-```bash
-make all                 # ≈30 s on a modern laptop
-```
-
-Or run the drivers individually:
-
-| Driver | Outputs |
-| :--- | :--- |
-| `python scripts/robot_spec.py` | text-only manufacturer spec dump |
-| `python scripts/dh_frames.py` | `figures/dh_frames.png` |
-| `python scripts/forward_kinematics.py` | `figures/forward_kinematics_configs.png` |
-| `python scripts/joint_trajectories.py` | `quintic_profile.png`, `joint_isolation_panel.png`, `animations/joint_sweep.gif` |
-| `python scripts/jacobian_singularities.py` | `wrist_singularity_sweep.png`, `animations/velocity_arrows.gif` |
-| `python scripts/inverse_kinematics.py` | `ik_round_trip.png`, `ik_branches.png` |
-| `python scripts/task_space_trajectory.py` | `task_space_*.png`, `task_space_Q.npy`, `animations/task_space_motion.gif` |
-| `python scripts/urdf_demo.py` | `urdf/kr6_sdh.urdf`, `urdf_vs_stick.png`, `animations/urdf_vs_stick.gif` |
-
-The drivers are deterministic (RNG-free except for the verification scripts, which are seeded) — re-running on the same machine always produces byte-identical artefacts.
-
----
-
-## Verification & numerical results
-
-All numbers below are produced by `make test` and by the driver scripts; they're not hand-curated.
-
-| Property | Numerical result |
-| :--- | :--- |
-| Wrist-centre reach at q = 0 vs. KUKA spec (0.901 m) | error < 5 mm ✓ |
-| Analytic vs. central-finite-difference Jacobian, max norm over 50 random configs | **3.30 × 10⁻¹⁰** ✓ |
-| Closed-form IK round-trip, single hand-picked config | **0.00 mm position, 9.7 × 10⁻¹⁶ rotation** |
-| Closed-form IK round-trip, max over 200 random configs (away from wrist sing.) | **0.00 mm position, 2.1 × 10⁻¹⁵ rotation** |
-| `J(q) · ik_velocity(q, v, ω)` recovers the requested task twist | exact to machine precision |
-| `urchin` URDF FK vs. analytic DH FK at q\_ready | ≤ **50 µm** position, < 1 × 10⁻⁴ rotation |
-| Wrist-singularity sweep: σ\_min(J), w(J) as q₅ → 0 | both → 0 (by inspection of `figures/wrist_singularity_sweep.png`) |
-| Quintic boundary conditions (q, q̇, q̈ at t₀ and t\_f) | exact to floating-point precision |
-| LSPB cruise velocity attained on the linear segment | within 10⁻³ m/s |
-
-These checks are encoded in the test-suite — see `tests/test_*.py` — so any regression breaks CI.
-
----
-
-## Robot specifications
-
-| Parameter | Value | Source |
-| :--- | :--- | :--- |
-| Manufacturer / model | KUKA Roboter GmbH · KR 6 R900 sixx (KR AGILUS family) | KUKA OpInst (2015) |
-| Number of axes | 6 (all revolute) | KUKA OpInst |
-| Reach | 0.901 m to wrist centre, 0.981 m to flange | KUKA OpInst |
-| Payload | 6 kg max (3 kg rated for optimal cycle time) | KUKA OpInst |
-| Repeatability | ± 0.03 mm (ISO 9283) | KUKA OpInst |
-| Working envelope | 2.85 m³ | KUKA OpInst |
-| Joint limits q\_min (deg) | [−170, −190, −120, −185, −120, −350] | KUKA OpInst |
-| Joint limits q\_max (deg) | [+170, +45, +156, +185, +120, +350] | KUKA OpInst |
-| Joint speeds q̇\_max (rad/s) | [6.28, 5.24, 6.28, 6.65, 6.77, 10.73] | KUKA OpInst |
-| DH parameters | see `kr6_kinematics/dh.py · KR6_SDH` | this repo |
-
----
-
-## API reference
-
-The library exposes 25 public symbols. See module docstrings for full
-signatures (`pydoc kr6_kinematics`), and the test-suite for usage
-examples.
-
-| Group | Names |
-| :--- | :--- |
-| DH parameters & FK | `KR6_SDH`, `Q_ZERO`, `Q_READY`, `JOINT_NAMES`, `dh_link`, `dh_link_SE3`, `kr6_frames`, `kr6_fk` |
-| Joint limits | `Q_MIN`, `Q_MAX`, `QD_MAX`, `clip_to_limits`, `in_limits` |
-| Velocity kinematics | `jacobian`, `manipulability`, `is_singular` |
-| Inverse kinematics | `ik_position`, `ik_velocity` |
-| Trajectories | `quintic`, `quintic_vec`, `lspb` |
-| Visualisation | `setup_3d_axes`, `draw_frame`, `draw_stick_figure`, `animate_joint_trajectory` |
-
----
-
-## Testing
-
-```bash
-make test                                       # 39 tests, < 2 s
-python -m pytest tests/test_jacobian.py -v      # one module, verbose
-python -m pytest tests/ --cov=kr6_kinematics    # with coverage
-```
-
-The test-suite covers:
-
-- DH transform shape, orthonormality and base-frame conventions
-- FK numerical sanity (manufacturer reach, smoothness under perturbation)
-- Joint-limit clipping and predicate
-- Analytic vs. finite-difference Jacobian agreement
-- Manipulability collapse near the wrist singularity
-- IK round-trip (single + 100 random)
-- IK velocity vs. Jacobian inverse, and forward consistency `J · q̇ = ξ`
-- Quintic / quintic\_vec / LSPB boundary conditions and derivative consistency
-- Generated-URDF parseability
-- `urchin` URDF FK vs. analytic DH FK
-- The committed URDF stays in sync with `build_urdf_string()`
-
----
-
-## Roadmap & known limitations
+## Limitations
 
 - The `shoulder_front=False` IK branch returns a kinematically valid but
   not necessarily target-reaching configuration; it's preserved for the
   branch-panel visualisation but should not be used for closed-loop
-  control. A clean fix requires a sign-aware ZYZ decomposition; PRs
-  welcome.
+  control. A clean fix requires a sign-aware ZYZ decomposition.
 - The auto-generated URDF uses cylinder primitives sized to look like
   the real arm, but it carries placeholder mass / inertia. For
   contact-rich simulation in MuJoCo / PyBullet, replace with the
@@ -409,8 +330,8 @@ The test-suite covers:
   extension.
 - Only single-arm kinematics are modelled — base motion, end-effector
   tooling and the full controller dynamics are out of scope.
-
----
+- Not tested on a physical KUKA arm; all results are numerical checks
+  and visualizations.
 
 ## References
 
@@ -419,36 +340,9 @@ The test-suite covers:
 3. D. L. Pieper. "The Kinematics of Manipulators Under Computer Control." Stanford AIM-72, 1968.
 4. T. Yoshikawa. "Manipulability of robotic mechanisms." *IJRR* 4(2), 1985, pp. 3–9.
 5. KUKA Roboter GmbH. *KR 6 R900 sixx — Operating Instructions*, 2015.
-6. M. Turgut and M. Kaleli. "Kinematic and Dynamic Analysis of a 6-DoF KUKA KR 6 R900 sixx Industrial Robot." *Mechanical Sciences*, 2022.
-7. ROS-Industrial. `kuka_experimental/kuka_kr6_support` — KR 6 URDFs and meshes. <https://github.com/ros-industrial/kuka_experimental>
-8. P. Corke. *Robotics, Vision and Control* (Python edition). Springer, 2023. (`spatialmath-python`)
-
----
-
-## Citation
-
-If you reference this code, please cite via the
-[`CITATION.cff`](CITATION.cff) file or BibTeX below:
-
-```bibtex
-@software{bliss2026kr6,
-  author  = {Bliss, Jangara},
-  title   = {{KUKA KR 6 R900 sixx} -- Complete Kinematics Suite},
-  year    = {2026},
-  version = {1.0.0},
-  url     = {https://github.com/Janga786/kuka-kr6-kinematics},
-  license = {MIT}
-}
-```
-
----
+6. ROS-Industrial. `kuka_experimental/kuka_kr6_support` — KR 6 URDFs and meshes. <https://github.com/ros-industrial/kuka_experimental>
+7. P. Corke. *Robotics, Vision and Control* (Python edition). Springer, 2023. (`spatialmath-python`)
 
 ## License
 
-[MIT](LICENSE) — free for commercial, academic and educational use.
-
-<div align="center">
-<sub>
-<i>"The robot has six joints. The math has six joints. They had better agree."</i>
-</sub>
-</div>
+MIT. See [LICENSE](LICENSE). A citation file is in [CITATION.cff](CITATION.cff).
