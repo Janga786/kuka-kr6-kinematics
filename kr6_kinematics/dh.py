@@ -21,9 +21,7 @@ is the joint variable for revolute joint *i*.
 
 The link constants below are taken from the ROS-Industrial URDF for the
 KR 6 R900 sixx, cross-checked against the KUKA operating instructions
-manual (2015) and against the parameters reported by Turgut & Kaleli
-("Kinematic and dynamic analysis of a 6-DoF KUKA KR 6 R900 sixx
-industrial robot", 2022). All units are SI (metres and radians).
+manual (2015). All units are SI (metres and radians).
 """
 
 from __future__ import annotations

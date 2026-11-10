@@ -56,7 +56,7 @@ transforms, `urchin` only to reload the generated URDF for cross-checking, and
 | Velocity IK reproduces the requested twist | to 1e-12 | `tests/test_ik.py` |
 | Generated URDF (via `urchin`) vs. analytic DH at the ready pose | test tolerance 50 µm; measured about 2 µm | `tests/test_urdf.py`, `scripts/urdf_demo.py` |
 | Manipulability near the wrist singularity (q5 -> 0) | drops below 5% of its ready-pose value | `tests/test_jacobian.py` |
-| Quintic and LSPB boundary conditions | exact to floating-point precision | `tests/test_trajectories.py` |
+| Quintic and LSPB boundary conditions | quintic to 1e-10; LSPB endpoint and cruise-speed checks | `tests/test_trajectories.py` |
 
 Known limits are listed under [Limitations](#limitations).
 
